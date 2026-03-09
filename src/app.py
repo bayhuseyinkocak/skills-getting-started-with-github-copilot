@@ -78,6 +78,20 @@ activities = {
 }
 
 
+
+@app.delete("/activities/{activity_name}/unregister")
+def unregister_from_activity(activity_name: str, email: str):
+    """Remove a student from an activity"""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    activity = activities[activity_name]
+    try:
+        activity["participants"].remove(email)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Participant not found")
+    return {"message": f"Removed {email} from {activity_name}"}
+
+
 @app.get("/")
 def root():
     return RedirectResponse(url="/static/index.html")
